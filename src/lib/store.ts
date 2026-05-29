@@ -1,0 +1,218 @@
+import { createStore, produce } from "solid-js/store";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import {
+  createEventRow,
+  eventExists,
+  fetchEventRows,
+  joinEventRow,
+  subscribeToEvent,
+  updateDrink,
+} from "./db";
+import { generateEditToken, getEditToken, setEditToken } from "./identity";
+import type { DrinkField, MasterRow } from "./types";
+import { isValidEventCode, normalizeEventCode, normalizePlayerName } from "./types";
+
+type AppStore = {
+  rows: MasterRow[];
+  eventName: string;
+  playerName: string;
+  editToken: string | null;
+  loading: boolean;
+  error: string;
+  form: {
+    eventCode: string;
+    playerName: string;
+  };
+};
+
+const [state, setState] = createStore<AppStore>({
+  rows: [],
+  eventName: "",
+  playerName: "",
+  editToken: getEditToken(),
+  loading: false,
+  error: "",
+  form: {
+    eventCode: "",
+    playerName: "",
+  },
+});
+
+let channel: RealtimeChannel | null = null;
+
+function setError(message: string) {
+  setState("error", message);
+}
+
+function clearError() {
+  setState("error", "");
+}
+
+function setLoading(loading: boolean) {
+  setState("loading", loading);
+}
+
+function setFormField(field: "eventCode" | "playerName", value: string) {
+  setState("form", field, value);
+}
+
+function validateForm(): { eventName: string; playerName: string } | null {
+  const eventName = normalizeEventCode(state.form.eventCode);
+  const playerName = normalizePlayerName(state.form.playerName);
+
+  if (!isValidEventCode(state.form.eventCode)) {
+    setError("Event code must be URL-safe (letters, numbers, -, _).");
+    return null;
+  }
+  if (!playerName) {
+    setError("Player name is required.");
+    return null;
+  }
+  clearError();
+  return { eventName, playerName };
+}
+
+async function createEvent(): Promise<string | null> {
+  const parsed = validateForm();
+  if (!parsed) return null;
+
+  setLoading(true);
+  try {
+    const token = generateEditToken();
+    const row = await createEventRow(parsed.eventName, parsed.playerName, token);
+    setEditToken(token);
+    setState({
+      editToken: token,
+      eventName: row.event_name,
+      playerName: row.player_name,
+    });
+    return `/event/${encodeURIComponent(row.event_name)}`;
+  } catch (e) {
+    setError(e instanceof Error ? e.message : "Could not create event.");
+    return null;
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function joinEvent(): Promise<string | null> {
+  const parsed = validateForm();
+  if (!parsed) return null;
+
+  setLoading(true);
+  try {
+    const exists = await eventExists(parsed.eventName);
+    if (!exists) {
+      setError("Event not found. Check the code or create a new event.");
+      return null;
+    }
+
+    const token = generateEditToken();
+    const row = await joinEventRow(parsed.eventName, parsed.playerName, token);
+    setEditToken(token);
+    setState({
+      editToken: token,
+      eventName: row.event_name,
+      playerName: row.player_name,
+    });
+    return `/event/${encodeURIComponent(row.event_name)}`;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Could not join event.";
+    if (msg.includes("duplicate") || msg.includes("unique")) {
+      setError("That player name is already taken in this event.");
+    } else {
+      setError(msg);
+    }
+    return null;
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function loadEvent(eventName: string) {
+  setLoading(true);
+  clearError();
+  try {
+    const rows = await fetchEventRows(eventName);
+    if (rows.length === 0) {
+      setError("Event not found.");
+      setState("rows", []);
+      return;
+    }
+    setState({
+      eventName,
+      rows,
+      editToken: getEditToken(),
+    });
+  } catch (e) {
+    setError(e instanceof Error ? e.message : "Could not load event.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+function teardownRealtime() {
+  if (channel) {
+    channel.unsubscribe();
+    channel = null;
+  }
+}
+
+function setupRealtime(eventName: string) {
+  teardownRealtime();
+  channel = subscribeToEvent(eventName, () => {
+    void fetchEventRows(eventName).then((rows) => {
+      if (rows.length > 0) setState("rows", rows);
+    });
+  });
+}
+
+async function updateCell(
+  playerName: string,
+  field: DrinkField,
+  value: number
+): Promise<void> {
+  const token = state.editToken;
+  if (!token || !state.eventName) return;
+
+  const idx = state.rows.findIndex((r) => r.player_name === playerName);
+  if (idx === -1) return;
+
+  const prev = state.rows[idx][field];
+  setState(
+    produce((s) => {
+      s.rows[idx][field] = value;
+    })
+  );
+
+  try {
+    await updateDrink(state.eventName, playerName, field, value, token);
+  } catch (e) {
+    setState(
+      produce((s) => {
+        s.rows[idx][field] = prev;
+      })
+    );
+    setError(e instanceof Error ? e.message : "Update failed.");
+  }
+}
+
+function resetForm() {
+  setState({
+    form: { eventCode: "", playerName: "" },
+    error: "",
+  });
+}
+
+export const appStore = {
+  state,
+  setFormField,
+  createEvent,
+  joinEvent,
+  loadEvent,
+  setupRealtime,
+  teardownRealtime,
+  updateCell,
+  resetForm,
+  clearError,
+};
