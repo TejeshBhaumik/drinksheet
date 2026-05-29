@@ -1,5 +1,5 @@
 import { createClient, type RealtimeChannel } from "@supabase/supabase-js";
-import type { DrinkField, MasterRow } from "./types";
+import type { DrinkField, MasterRow, RecentEvent } from "./types";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -89,6 +89,27 @@ export async function fetchEventRows(eventName: string): Promise<MasterRow[]> {
 
   if (error) throw error;
   return (data ?? []) as MasterRow[];
+}
+
+export async function fetchRecentEvents(limit = 5): Promise<RecentEvent[]> {
+  const { data, error } = await supabase
+    .from("master")
+    .select("event_name, created_at");
+
+  if (error) throw error;
+
+  const firstCreated = new Map<string, string>();
+  for (const row of data ?? []) {
+    const prev = firstCreated.get(row.event_name);
+    if (!prev || row.created_at < prev) {
+      firstCreated.set(row.event_name, row.created_at);
+    }
+  }
+
+  return [...firstCreated.entries()]
+    .sort((a, b) => b[1].localeCompare(a[1]))
+    .slice(0, limit)
+    .map(([event_name, created_at]) => ({ event_name, created_at }));
 }
 
 export async function updateDrink(

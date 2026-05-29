@@ -28,3 +28,10 @@ create policy "Allow update" on master for update using (true);
 
 -- 5. Enable realtime (live leaderboard updates)
 alter publication supabase_realtime add table master;
+
+-- Recent events query (first player row per event = event creation time):
+-- select event_name, min(created_at) as created_at
+-- from master
+-- group by event_name
+-- order by created_at desc
+-- limit 5;

@@ -6,7 +6,11 @@ import { appStore } from "../lib/store";
 export function JoinEvent() {
   const navigate = useNavigate();
 
-  onMount(() => appStore.resetForm());
+  onMount(() => {
+    appStore.resetForm();
+    const event = new URLSearchParams(window.location.search).get("event");
+    if (event) appStore.prefillEventCode(event);
+  });
 
   async function handleSubmit() {
     const path = await appStore.joinEvent();

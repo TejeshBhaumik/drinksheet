@@ -1,15 +1,23 @@
 import { Show, onCleanup, onMount } from "solid-js";
-import { useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { LeaderboardTable } from "../components/LeaderboardTable";
+import { hasSessionForEvent } from "../lib/identity";
 import { appStore } from "../lib/store";
 import { normalizeEventCode } from "../lib/types";
 
 export function EventPage() {
   const params = useParams();
+  const navigate = useNavigate();
   const { state } = appStore;
 
   onMount(() => {
     const eventName = normalizeEventCode(decodeURIComponent(params.eventName));
+
+    if (!hasSessionForEvent(eventName)) {
+      navigate(`/?event=${encodeURIComponent(eventName)}`, { replace: true });
+      return;
+    }
+
     void appStore.loadEvent(eventName);
     appStore.setupRealtime(eventName);
   });

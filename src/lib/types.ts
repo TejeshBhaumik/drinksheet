@@ -10,6 +10,17 @@ export type MasterRow = {
 
 export type DrinkField = "beer" | "wine" | "liquor";
 
+export type RecentEvent = {
+  event_name: string;
+  created_at: string;
+};
+
+export const MAX_DRINK = 30;
+
+export function clampDrink(value: number): number {
+  return Math.min(MAX_DRINK, Math.max(0, value));
+}
+
 export function total(row: Pick<MasterRow, "beer" | "wine" | "liquor">): number {
   return row.beer + row.wine + row.liquor;
 }
@@ -29,5 +40,5 @@ export function isValidEventCode(code: string): boolean {
 export function parseDrink(value: string): number | null {
   const n = Number(value);
   if (value === "" || Number.isNaN(n) || n < 0) return null;
-  return n;
+  return clampDrink(n);
 }
