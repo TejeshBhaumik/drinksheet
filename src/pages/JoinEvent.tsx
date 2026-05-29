@@ -20,7 +20,7 @@ export function JoinEvent() {
       </a>
       <div class="card">
         <h2 class="page-title">Join Event</h2>
-        <p class="page-sub">Enter the shared event code and your name.</p>
+        <p class="page-sub">Enter the event code and your name. Returning? Use the same name to open your board.</p>
         <EventForm mode="join" onSubmit={handleSubmit} />
       </div>
     </>

@@ -43,6 +43,21 @@ export async function eventExists(eventName: string): Promise<boolean> {
   return (data?.length ?? 0) > 0;
 }
 
+export async function fetchPlayerRow(
+  eventName: string,
+  playerName: string
+): Promise<MasterRow | null> {
+  const { data, error } = await supabase
+    .from("master")
+    .select("*")
+    .eq("event_name", eventName)
+    .eq("player_name", playerName)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as MasterRow | null;
+}
+
 export async function joinEventRow(
   eventName: string,
   playerName: string,

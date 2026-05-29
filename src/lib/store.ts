@@ -4,6 +4,7 @@ import {
   createEventRow,
   eventExists,
   fetchEventRows,
+  fetchPlayerRow,
   joinEventRow,
   subscribeToEvent,
   updateDrink,
@@ -95,6 +96,12 @@ async function createEvent(): Promise<string | null> {
   }
 }
 
+function resolvePlayerFromToken(rows: MasterRow[], token: string | null): string {
+  if (!token) return "";
+  const match = rows.find((r) => r.edit_token === token);
+  return match?.player_name ?? "";
+}
+
 async function joinEvent(): Promise<string | null> {
   const parsed = validateForm();
   if (!parsed) return null;
@@ -107,6 +114,18 @@ async function joinEvent(): Promise<string | null> {
       return null;
     }
 
+    const existing = await fetchPlayerRow(parsed.eventName, parsed.playerName);
+
+    if (existing) {
+      const token = getEditToken();
+      setState({
+        eventName: existing.event_name,
+        playerName: existing.player_name,
+        editToken: token,
+      });
+      return `/event/${encodeURIComponent(existing.event_name)}`;
+    }
+
     const token = generateEditToken();
     const row = await joinEventRow(parsed.eventName, parsed.playerName, token);
     setEditToken(token);
@@ -117,12 +136,7 @@ async function joinEvent(): Promise<string | null> {
     });
     return `/event/${encodeURIComponent(row.event_name)}`;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Could not join event.";
-    if (msg.includes("duplicate") || msg.includes("unique")) {
-      setError("That player name is already taken in this event.");
-    } else {
-      setError(msg);
-    }
+    setError(e instanceof Error ? e.message : "Could not join event.");
     return null;
   } finally {
     setLoading(false);
@@ -143,6 +157,7 @@ async function loadEvent(eventName: string) {
       eventName,
       rows,
       editToken: getEditToken(),
+      playerName: resolvePlayerFromToken(rows, getEditToken()),
     });
   } catch (e) {
     setError(e instanceof Error ? e.message : "Could not load event.");

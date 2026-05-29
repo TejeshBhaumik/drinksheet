@@ -27,7 +27,7 @@ export function LeaderboardTable() {
             <For each={sorted()}>
               {(row) => {
                 const editable = () =>
-                  canEditRow(row, state.eventName, row.player_name, state.editToken);
+                  canEditRow(row, state.eventName, state.playerName, state.editToken);
                 const isSelf = () => editable();
 
                 return (
