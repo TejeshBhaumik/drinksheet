@@ -137,6 +137,15 @@ input {
   font-size: 0.9375rem;
 }
 
+.hero__invite a {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+.hero__invite a:hover {
+  color: #fff;
+}
+
 .actions {
   display: flex;
   flex-direction: column;
@@ -257,6 +266,35 @@ input {
   color: var(--color-text-muted);
   margin: 0 0 var(--space-5);
   font-size: 0.9375rem;
+}
+
+.event-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.event-header .page-sub {
+  margin-bottom: var(--space-4);
+}
+
+.share-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.invite-banner {
+  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+  line-height: 1.4;
+}
+
+.invite-banner .event-code {
+  font-size: 1.1em;
 }
 
 .back-link {

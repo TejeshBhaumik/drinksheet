@@ -1,12 +1,14 @@
+import { Show } from "solid-js";
 import { appStore } from "../lib/store";
 
 type Props = {
-  mode: "create" | "join";
+  mode: "create" | "join" | "invite";
   onSubmit: () => void;
 };
 
 export function EventForm(props: Props) {
   const { state } = appStore;
+  const isInvite = () => props.mode === "invite";
 
   return (
     <form
@@ -16,20 +18,22 @@ export function EventForm(props: Props) {
         props.onSubmit();
       }}
     >
-      <div class="field">
-        <label for="eventCode">Event Code</label>
-        <input
-          id="eventCode"
-          type="text"
-          placeholder="VEGAS2026"
-          autocomplete="off"
-          value={state.form.eventCode}
-          onInput={(e) => appStore.setFormField("eventCode", e.currentTarget.value)}
-        />
-      </div>
+      <Show when={!isInvite()}>
+        <div class="field">
+          <label for="eventCode">Event Code</label>
+          <input
+            id="eventCode"
+            type="text"
+            placeholder="VEGAS2026"
+            autocomplete="off"
+            value={state.form.eventCode}
+            onInput={(e) => appStore.setFormField("eventCode", e.currentTarget.value)}
+          />
+        </div>
+      </Show>
 
       <div class="field">
-        <label for="playerName">Player Name</label>
+        <label for="playerName">{isInvite() ? "Your name" : "Player Name"}</label>
         <input
           id="playerName"
           type="text"

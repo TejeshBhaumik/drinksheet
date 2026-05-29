@@ -12,9 +12,9 @@ import {
 } from "./db";
 import {
   generateEditToken,
-  getSessionForEvent,
+  resolveEditTokenForRow,
+  resolveIdentityForEvent,
   setSession,
-  verifySessionForRows,
 } from "./identity";
 import type { DrinkField, MasterRow, RecentEvent } from "./types";
 import { isValidEventCode, normalizeEventCode, normalizePlayerName, clampDrink } from "./types";
@@ -137,22 +137,16 @@ async function joinEvent(): Promise<string | null> {
     const existing = await fetchPlayerRow(parsed.eventName, parsed.playerName);
 
     if (existing) {
-      const session = getSessionForEvent(parsed.eventName);
-      const token =
-        session?.player_name === existing.player_name &&
-        session.edit_token === existing.edit_token
-          ? session.edit_token
-          : "";
-
+      const editToken = resolveEditTokenForRow(parsed.eventName, existing);
       setSession({
         event_name: existing.event_name,
         player_name: existing.player_name,
-        edit_token: token,
+        edit_token: editToken ?? "",
       });
       setState({
         eventName: existing.event_name,
         playerName: existing.player_name,
-        editToken: token || null,
+        editToken: editToken,
       });
       return `/event/${encodeURIComponent(existing.event_name)}`;
     }
@@ -180,13 +174,12 @@ async function loadEvent(eventName: string) {
       return;
     }
 
-    const session = getSessionForEvent(eventName);
     const preserved =
-      state.eventName === eventName && state.playerName
+      state.eventName === eventName && state.playerName && state.editToken
         ? { playerName: state.playerName, editToken: state.editToken }
         : null;
-    const fromSession = verifySessionForRows(session, rows);
-    const identity = preserved ?? fromSession;
+    const fromStorage = resolveIdentityForEvent(eventName, rows);
+    const identity = preserved ?? fromStorage;
 
     setState({
       eventName,
@@ -214,10 +207,7 @@ function setupRealtime(eventName: string) {
     void fetchEventRows(eventName).then((rows) => {
       if (rows.length > 0) {
         setState("rows", rows);
-        const { playerName, editToken } = verifySessionForRows(
-          getSessionForEvent(eventName),
-          rows
-        );
+        const { playerName, editToken } = resolveIdentityForEvent(eventName, rows);
         if (playerName) setState({ playerName, editToken });
       }
     });
