@@ -1,9 +1,9 @@
-import { normalizeEventCode, normalizePlayerName } from "./types";
+import { normalizeDisplayName, normalizeEventCode } from "./types";
 
-export function buildInviteLink(eventName: string, playerName: string): string {
+export function buildInviteLink(eventCode: string, displayName: string): string {
   const params = new URLSearchParams({
-    event: normalizeEventCode(eventName),
-    from: normalizePlayerName(playerName),
+    event: normalizeEventCode(eventCode),
+    from: normalizeDisplayName(displayName),
   });
   return `${window.location.origin}/join?${params.toString()}`;
 }
@@ -14,7 +14,7 @@ export function parseInviteParams(search: string): {
 } {
   const params = new URLSearchParams(search);
   const eventName = params.get("event") ? normalizeEventCode(params.get("event")!) : "";
-  const invitedBy = params.get("from") ? normalizePlayerName(params.get("from")!) : "";
+  const invitedBy = params.get("from") ? normalizeDisplayName(params.get("from")!) : "";
   return { eventName, invitedBy };
 }
 

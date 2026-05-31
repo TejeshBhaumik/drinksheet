@@ -22,9 +22,9 @@ export function JoinEvent() {
   }
 
   return (
-    <>
+    <div class="page-stack">
       <a href="/" class="back-link">
-        ← Back
+        Back
       </a>
       <div class="card">
         <Show
@@ -46,6 +46,6 @@ export function JoinEvent() {
         </Show>
         <EventForm mode={isInvite() ? "invite" : "join"} onSubmit={handleSubmit} />
       </div>
-    </>
+    </div>
   );
 }

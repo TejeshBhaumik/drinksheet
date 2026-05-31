@@ -1,13 +1,12 @@
 import { Show, onMount } from "solid-js";
-import { A, useNavigate } from "@solidjs/router";
+import { useNavigate } from "@solidjs/router";
 import { LandingActions } from "../components/LandingActions";
 import { RecentEvents } from "../components/RecentEvents";
-import { getSession } from "../lib/identity";
 import { appStore } from "../lib/store";
 
 export function Landing() {
   const navigate = useNavigate();
-  const savedSession = () => getSession();
+  const { state } = appStore;
 
   onMount(() => {
     const params = new URLSearchParams(window.location.search);
@@ -23,16 +22,11 @@ export function Landing() {
       <div class="card card--center">
         <div class="hero">
           <h1>Drinksheet</h1>
-          <p>Track drinks together. No login required.</p>
-          <Show when={savedSession()}>
-            {(session) => (
-              <p class="hero__invite">
-                Welcome back, {session().player_name} —{" "}
-                <A href={`/event/${encodeURIComponent(session().event_name)}`}>
-                  return to {session().event_name}
-                </A>
-              </p>
-            )}
+          <p>Real-time competition tracking with live scores, event codes, and finish-line stats.</p>
+          <Show when={!state.currentUser && !state.authLoading}>
+            <button type="button" class="btn btn--primary hero__signin" onClick={() => void appStore.loginWithGoogle()}>
+              Sign in with Google
+            </button>
           </Show>
         </div>
         <LandingActions />

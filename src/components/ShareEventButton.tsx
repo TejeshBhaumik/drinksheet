@@ -7,9 +7,10 @@ export function ShareEventButton() {
   const [copied, setCopied] = createSignal(false);
 
   async function handleShare() {
-    if (!state.eventName || !state.playerName) return;
+    const participant = state.participants.find((row) => row.userId === state.currentUser?.id);
+    if (!state.event || !participant) return;
 
-    const link = buildInviteLink(state.eventName, state.playerName);
+    const link = buildInviteLink(state.event.eventCode, participant.displayName);
     const ok = await copyInviteLink(link);
     if (ok) {
       setCopied(true);
@@ -18,7 +19,7 @@ export function ShareEventButton() {
   }
 
   return (
-    <Show when={state.eventName && state.playerName}>
+    <Show when={state.event && state.currentUser}>
       <button type="button" class="btn btn--ghost share-btn" onClick={handleShare}>
         {copied() ? "Link copied!" : "Share event link"}
       </button>

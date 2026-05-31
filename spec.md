@@ -1,502 +1,523 @@
-# Drinksheet — Implementation Plan
+Here is your **fully consolidated, migration-safe, MVP-appropriate spec.md v6** with:
 
-# Goal
-
-Build a lightweight, real-time drink tracking web app called **Drinksheet**.
-
-Users can:
-
-* create events
-* join events via a shared event code
-* track drinks collaboratively
-* edit only their own entries
-* view a live leaderboard
-
-Primary goal:
-
-* ultra-fast MVP
-* no login friction
-* real-time collaborative feel
-* simple deployable architecture
+* full architecture locked
+* leaderboard engine optimized
+* stepper UX system
+* migration-first API SDK layer (important addition)
+* Supabase abstraction enforced
+* no overengineering creep
+* still MVP-fast
 
 ---
 
-# Core Stack
+# 📄 Drinksheet — Competition Engine MVP Spec v6
+
+---
+
+## 🧭 STATUS
+
+This specification replaces all previous versions.
+
+The system is rebuilt around:
+
+* authentication
+* events
+* participants
+* event results (immutable)
+* user stats (cached)
+* messaging (SMS optional)
+
+---
+
+# 🧠 PRODUCT VISION
+
+Drinksheet is a **real-time social competition engine** where users:
+
+* create events
+* join events via link/code
+* update metrics in real time
+* compete on live leaderboards
+* view statistics
+* receive event summaries
+
+---
+
+# ⚙️ CORE DESIGN PRINCIPLE
+
+> Supabase is infrastructure. Not architecture.
+
+The frontend must remain fully backend-agnostic.
+
+---
+
+# 🧱 TECH STACK
 
 ## Frontend
 
-* Next.js (App Router)
-* React
+* SolidJS
 * TypeScript
-* TailwindCSS
+* Signals
+* createMemo
+* createResource
 
-## Backend / Database
+## Backend (MVP)
 
-* Supabase Postgres (or any SQL-compatible DB)
+* Supabase Auth
+* Supabase Postgres
+* Supabase Realtime
+* Edge Functions
 
 ## Hosting
 
 * Vercel
 
-## Realtime Layer
+## Styling
 
-* Supabase Realtime subscriptions (or polling fallback)
-
----
-
-# Styling System (IMPORTANT)
-
-All UI styling must use:
-
-```text id="style1"
-.agents/skills/minimal
-```
-
-## Rules:
-
-* All components must conform to Neon styling system
-* Do not introduce ad-hoc styling systems outside Neon
-* Tailwind is allowed only as a base utility layer
-* Neon system defines:
-
-  * spacing rhythm
-  * color tokens
-  * component styling patterns
-  * hover/active states
-  * card + table styling
-
-## Design Direction:
-
-* modern neon minimalism
-* soft glow accents
-* dark-first UI
-* high contrast readability
-* clean data-table aesthetic
+* `.agents/skills/modern`
 
 ---
 
-# Architecture
+# 🧭 MVP BUILD PLAN
 
-```text id="a1"
-Client (Next.js)
-    ↓
-Supabase Client SDK
-    ↓
-Postgres Database
-```
+## Phase 1 — Foundation
 
-No custom backend server required.
-
-All reads/writes are performed via parameterized SDK calls.
+* Google Auth
+* users table
+* events table
+* participants table
+* API layer scaffolding
 
 ---
 
-# Core Concept
+## Phase 2 — Event Flow
 
-Drinksheet uses a **shared event code + local edit token identity system**.
-
-This avoids login while still enforcing per-user editing control.
-
----
-
-# Data Model
-
-## Table Name
-
-```text id="a2"
-master
-```
-
-Each row represents:
-
-* one player within one event
+* create event
+* join event via event_code
+* auto participant creation
+* redirect to event page
 
 ---
 
-# Logical Identity
+## Phase 3 — Metrics Engine
 
-Each row is uniquely identified by:
-
-```text id="a3"
-(event_name, player_name)
-```
-
-This ensures:
-
-* no duplicate users per event
+* JSON metrics per participant
+* calculateScore()
+* leaderboard memo pipeline
 
 ---
 
-# Schema
+## Phase 4 — Realtime
 
-```typescript id="a4"
-type MasterRow = {
-  event_name: string
-  player_name: string
-
-  beer: number
-  wine: number
-  liquor: number
-
-  edit_token: string
-
-  created_at: timestamp
-}
-```
+* Supabase Realtime subscription
+* useLeaderboardStream wrapper
 
 ---
 
-# Constraints
+## Phase 5 — Completion Flow
 
-## Uniqueness
-
-```text id="a5"
-(event_name, player_name)
-```
-
-## Numeric Rules
-
-* beer, wine, liquor:
-
-  * default 0
-  * allow decimals
-  * never negative
+* snapshot event_results
+* update user_stats
+* optional SMS blast
 
 ---
 
-# Identity System
+## Phase 6 — UX Polish
 
-## Event Code (Shared)
-
-Used to access event:
-
-```text id="a6"
-/event/VEGAS2026
-```
-
-All users share the same event link.
+* steppers
+* animations
+* leaderboard transitions
 
 ---
 
-## Edit Token (Private)
-
-Each player gets:
-
-```text id="a7"
-edit_token
-```
-
-Stored in:
-
-* browser localStorage
-
-Used to determine:
-
-* who can edit which row
+# 🧱 ARCHITECTURE
 
 ---
 
-# Pages
+## UI LAYER (STRICT RULE)
 
-# 1. Landing Page
+Must NOT contain:
 
-Route:
+* Supabase calls
+* SQL
+* scoring logic
+* stats logic
 
-```text id="a8"
-/
-```
+Only:
 
-UI:
-
-```text id="a9"
-[ Create Event ]   [ Join Event ]
-```
-
-Minimal card-based layout.
-
-Styled entirely using `.agents/skills/neon`.
-
----
-
-# 2. Create Event Flow
-
-## Inputs
-
-```text id="a10"
-Event Code
-Player Name
-```
-
-## Behavior
-
-1. create row in `master`
-2. set all drink values to 0
-3. generate `edit_token`
-4. store token in browser localStorage
-5. redirect to event page
-
----
-
-# 3. Join Event Flow
-
-## Inputs
-
-```text id="a11"
-Event Code
-Player Name
-```
-
-## Behavior
-
-1. verify event exists
-2. insert new row
-3. generate `edit_token`
-4. store token in localStorage
-5. redirect to event page
-
----
-
-# 4. Event Page
-
-Route:
-
-```text id="a12"
-/event/[eventName]
-```
-
-## Features
-
-* full leaderboard view
-* real-time updates
-* inline editing (own row only)
-
-Styled using `.agents/skills/neon`.
-
----
-
-# Table Layout
-
-| Player | Beer | Liquor | Wine | Total |
-| ------ | ---- | ------ | ---- | ----- |
-
----
-
-# Computed Fields
-
-## Total (Frontend only)
-
-```typescript id="a13"
-total = beer + wine + liquor
-```
-
-Never stored in DB.
-
----
-
-# Editing Rules
-
-## Immutable Fields
-
-* event_name
-* player_name
-
-## Editable Fields
-
-* beer
-* wine
-* liquor
-
----
-
-# Permission Model
-
-A row is editable only if:
-
-```text id="a14"
-request.edit_token === row.edit_token
-```
-
-AND:
-
-```text id="a15"
-event_name + player_name match row
-```
-
----
-
-# Update Behavior
-
-All updates must:
-
-* be parameterized (no raw SQL strings)
-* use SDK methods
-* avoid injection risk
-
----
-
-# Browser State
-
-On join/create:
-
-```text id="a17"
-localStorage.setItem("drinksheet_edit_token", token)
-```
-
-On load:
-
-* retrieve token
-* attach to update requests
-
----
-
-# Realtime Behavior
-
-* updates propagate instantly
-* all users see live leaderboard changes
-* optimistic UI updates for responsiveness
-
----
-
-# Frontend Structure
-
-```text id="a18"
-/app
-  /event/[eventName]
-    page.tsx
-
-/components
-  Header.tsx
-  LandingActions.tsx
-  EventForm.tsx
-  LeaderboardTable.tsx
-  EditableCell.tsx
-
-/lib
-  db.ts
-  identity.ts
-```
-
----
-
-# UI Principles
-
-Drinksheet should feel:
-
-* fast
-* social
-* lightweight
-* mobile-first
-* zero-friction
-
-All UI must conform to `.agents/skills/neon`.
-
----
-
-# Validation Rules
-
-## Event Code
-
-* URL-safe
-* uppercase recommended
-* unique per event
-
-## Player Name
-
-* required
-* trimmed
-* unique within event
-
-## Numbers
-
-* numeric only
-* no negatives
-* allow decimals
-
----
-
-# Security Model
-
-This is a **trust-based MVP system**, not full authentication.
-
-## Guarantees
-
-* users can only edit their own row
-* no login required
-* no server-side session complexity
-
-## Limitations
-
-* edit token is stored client-side
-* not secure against intentional abuse
-
----
-
-# Deployment
-
-## Vercel
-
-* auto deploy from GitHub
-* environment variables required
-
-## Database
-
-```text id="a19"
-DATABASE_URL
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-```
-
----
-
-# MVP Milestones
-
-## Phase 1
-
-* project setup
-* landing page
+* rendering
+* interaction
 * routing
 
-## Phase 2
+---
 
-* create event flow
-* join event flow
-* DB integration
+## LOGIC LAYER (PURE FUNCTIONS)
 
-## Phase 3
+* calculateScore()
+* computeLeaderboard()
+* computeEventStats()
+* computeUserStats()
 
-* event leaderboard
-* inline editing
+Must be:
 
-## Phase 4
-
-* realtime updates
-* optimistic UI
-
-## Phase 5
-
-* polish + mobile optimization
+* deterministic
+* backend-agnostic
+* reusable
 
 ---
 
-# Success Criteria
+## DATA LAYER
 
-Drinksheet is successful if:
+All data access must go through:
 
-* events are joinable in <10 seconds
-* multiple users can edit simultaneously
-* updates feel instant
-* no login is required
-* sharing a link is enough to use it
+```
+src/lib/api/
+```
 
 ---
 
-# Future Enhancements
+# 🔌 MIGRATION-FIRST API SDK (CRITICAL)
 
-* QR code event join
-* authentication upgrade (optional)
-* teams/groups
-* charts + analytics
-* export to CSV
-* emoji reactions
-* drink presets
-* admin mode
+This is the MOST IMPORTANT ADDITION.
+
+---
+
+# 🧠 API LAYER = MINI SDK
+
+The frontend ONLY uses this interface:
+
+---
+
+## auth.ts
+
+```ts
+getSession(): Promise<Session | null>
+
+getCurrentUser(): Promise<User | null>
+
+signInWithGoogle(): Promise<void>
+
+signOut(): Promise<void>
+```
+
+---
+
+## users.ts
+
+```ts
+getUser(userId: string): Promise<User>
+
+updateDisplayName(userId: string, name: string): Promise<void>
+
+updatePhoneNumber(userId: string, number: string): Promise<void>
+```
+
+---
+
+## events.ts
+
+```ts
+createEvent(input: {
+  eventName: string
+  createdBy: string
+}): Promise<Event>
+
+getEvent(eventCode: string): Promise<Event>
+
+joinEvent(input: {
+  eventCode: string
+  userId: string
+  displayName: string
+}): Promise<void>
+
+completeEvent(eventId: string): Promise<void>
+```
+
+---
+
+## participants.ts
+
+```ts
+getParticipants(eventId: string): Promise<Participant[]>
+
+updateParticipantMetrics(input: {
+  eventId: string
+  userId: string
+  metrics: Record<string, number>
+}): Promise<void>
+
+createParticipant(input: {
+  eventId: string
+  userId: string
+  displayName: string
+}): Promise<void>
+```
+
+---
+
+## leaderboard.ts
+
+```ts
+getLeaderboard(eventId: string): Promise<LeaderboardRow[]>
+```
+
+> NOTE: frontend still computes live leaderboard via createMemo
+
+This is only for snapshots / fallback.
+
+---
+
+## stats.ts
+
+```ts
+getUserStats(userId: string): Promise<UserStats>
+
+recomputeUserStats(userId: string): Promise<void>
+```
+
+---
+
+## links.ts
+
+```ts
+getEventLinks(eventId: string): Promise<Link[]>
+
+addLink(input: {
+  eventId: string
+  title: string
+  url: string
+  createdBy: string
+}): Promise<void>
+```
+
+---
+
+## sms.ts
+
+```ts
+sendEventSummary(input: {
+  eventId: string
+}): Promise<void>
+```
+
+---
+
+# 🧠 WHY THIS SDK MATTERS
+
+This guarantees:
+
+* frontend never depends on Supabase
+* backend can be replaced entirely
+* APIs become stable contract layer
+
+---
+
+# 🧮 SCORING ENGINE
+
+```ts
+score =
+  beer +
+  seltzer +
+  wine +
+  (liquor * 1.25)
+```
+
+---
+
+# ⚡ LEADERBOARD ENGINE (OPTIMIZED)
+
+## RULE
+
+Never compute score inside `.sort()`
+
+---
+
+## Step 1
+
+```ts
+const enriched = createMemo(() => {
+  return participants().map(p => ({
+    ...p,
+    score: calculateScore(p.metrics)
+  }));
+});
+```
+
+---
+
+## Step 2
+
+```ts
+const leaderboard = createMemo(() =>
+  enriched().sort((a, b) => b.score - a.score)
+);
+```
+
+---
+
+# 🎮 METRIC ENTRY UI
+
+## Stepper system (MVP UX)
+
+Each metric:
+
+```
+Beer        1.5
+[-]   [+]
+```
+
+---
+
+## Interaction rules
+
+* tap = ±0.5
+* long press = ±1.0
+
+---
+
+## Design principle
+
+> No text inputs required for primary flow
+
+---
+
+# 🔁 REALTIME MODEL
+
+* participants = live state
+* leaderboard = derived view
+* event_results = immutable snapshot
+
+---
+
+# 🧾 EVENT FLOW
+
+## Create
+
+* event created
+* event_code generated
+* creator auto-added
+
+---
+
+## Join
+
+* validate event_code
+* create participant
+* initialize metrics
+
+---
+
+## Update
+
+* user updates only own metrics
+* realtime updates propagate
+
+---
+
+## Complete
+
+* freeze leaderboard
+* write event_results
+* update user_stats
+* optional SMS
+
+---
+
+# 🧍 USER MODEL
+
+* users.display_name = global identity
+* participants.display_name = event identity
+
+---
+
+# 🧠 AUTH SYSTEM
+
+* Google OAuth only
+* auth.uid() canonical
+* survives refresh
+
+---
+
+# 🔐 SECURITY RULES
+
+* user can only edit own participant row
+* only event creator can complete event
+* RLS enforced everywhere
+
+---
+
+# 📊 USER STATS
+
+Derived ONLY from:
+
+* event_results
+
+Never from live participants.
+
+---
+
+# 🧠 MIGRATION GUARANTEE (CRITICAL)
+
+If rules are followed:
+
+> Supabase can be replaced without changing UI
+
+---
+
+## HARD RULES
+
+* no Supabase in UI
+* no SQL in frontend
+* no schema coupling in components
+* all logic in pure functions
+* all data via API SDK
+
+---
+
+# 🎨 UI SYSTEM
+
+---
+
+## Style
+
+* dark
+* neon accents
+* competitive energy
+
+---
+
+## Motion
+
+* leaderboard transitions
+* score pulses
+* podium animation
+
+---
+
+## UX GOAL
+
+> feels like a live game, not a form
+
+---
+
+# 🚀 MVP SUCCESS CRITERIA
+
+User can:
+
+1. sign in with Google
+2. create event
+3. join event
+4. update metrics in real time
+5. see live leaderboard
+6. view stats
+7. complete event
+8. receive results
+
+---
+
+# 🧠 FINAL SYSTEM DEFINITION
+
+Drinksheet is:
+
+> a real-time competition engine with pluggable metrics, reactive leaderboards, and immutable event history
+
+---

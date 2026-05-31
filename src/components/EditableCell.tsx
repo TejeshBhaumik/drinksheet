@@ -1,48 +1,69 @@
-import type { DrinkField } from "../lib/types";
-import { clampDrink, MAX_DRINK } from "../lib/types";
+import type { DrinkMetric } from "../lib/types";
+import { MAX_METRIC, clampMetric } from "../lib/types";
 import { appStore } from "../lib/store";
 
 type Props = {
-  playerName: string;
-  field: DrinkField;
+  field: DrinkMetric;
+  label: string;
   value: number;
-  editable: boolean;
 };
 
-function adjust(value: number, delta: number): number {
-  return clampDrink(value + delta);
+function nextValue(value: number, delta: number): number {
+  return clampMetric(value + delta);
 }
 
 export function EditableCell(props: Props) {
-  if (!props.editable) {
-    return <span class="cell-static">{props.value}</span>;
-  }
+  let pressTimer: number | undefined;
+  let longPressed = false;
 
   function change(delta: number) {
-    void appStore.updateCell(props.playerName, props.field, adjust(props.value, delta));
+    void appStore.updateMetric(props.field, nextValue(props.value, delta));
+  }
+
+  function startPress(delta: number) {
+    longPressed = false;
+    window.clearTimeout(pressTimer);
+    pressTimer = window.setTimeout(() => {
+      longPressed = true;
+      change(delta * 2);
+    }, 420);
+  }
+
+  function endPress(delta: number) {
+    window.clearTimeout(pressTimer);
+    if (!longPressed) change(delta);
   }
 
   return (
-    <div class="cell-counter">
-      <button
-        type="button"
-        class="cell-btn"
-        aria-label={`Decrease ${props.field}`}
-        disabled={props.value <= 0}
-        onClick={() => change(-1)}
-      >
-        −
-      </button>
-      <span class="cell-value">{props.value}</span>
-      <button
-        type="button"
-        class="cell-btn"
-        aria-label={`Increase ${props.field}`}
-        disabled={props.value >= MAX_DRINK}
-        onClick={() => change(1)}
-      >
-        +
-      </button>
-    </div>
+    <article class="metric-stepper">
+      <div class="metric-stepper__top">
+        <span>{props.label}</span>
+        <strong>{props.value.toFixed(1)}</strong>
+      </div>
+      <div class="metric-stepper__controls">
+        <button
+          type="button"
+          class="cell-btn"
+          aria-label={`Decrease ${props.label}`}
+          disabled={props.value <= 0}
+          onPointerDown={() => startPress(-0.5)}
+          onPointerUp={() => endPress(-0.5)}
+          onPointerLeave={() => window.clearTimeout(pressTimer)}
+        >
+          -
+        </button>
+        <button
+          type="button"
+          class="cell-btn cell-btn--plus"
+          aria-label={`Increase ${props.label}`}
+          disabled={props.value >= MAX_METRIC}
+          onPointerDown={() => startPress(0.5)}
+          onPointerUp={() => endPress(0.5)}
+          onPointerLeave={() => window.clearTimeout(pressTimer)}
+        >
+          +
+        </button>
+      </div>
+    </article>
   );
 }

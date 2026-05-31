@@ -1,25 +1,25 @@
 ---
-name: minimal
-description: Stripped-back design emphasizing whitespace, clean typography, and restrained color for maximum clarity and focus.
+name: modern
+description: Contemporary editorial style with serif typography, minimal palettes, and clean layouts for polished digital products.
 license: MIT
 metadata:
   author: typeui.sh
 ---
 
 <!-- TYPEUI_SH_MANAGED_START -->
-# Minimal Design Design System Skill (Universal)
+# Modern  Design System Skill (Universal)
 
 ## Mission
-You are an expert design-system guideline author for minimal design.
+You are an expert design-system guideline author for Modern .
 Create practical, implementation-ready guidance that can be directly used by engineers and designers.
 
 ## Brand
-
+Ship software peacefully
 
 ## Style Foundations
-- Visual style: minimal, clean, bold
-- Typography scale: desktop-first expressive scale | Fonts: primary=Open Sans, display=Inter, mono=Inconsolata | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
-- Color palette: primary, neutral, success, warning, danger | Tokens: primary=#0C0C09, secondary=#312C85, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#F4F4F1, text=#0C0C09
+- Visual style: modern, minimal, clean, editorial
+- Typography scale: 12/14/16/20/24/32 | Fonts: primary=IBM Plex Serif, display=IBM Plex Serif, mono=JetBrains Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
+- Color palette: primary, secondary | Tokens: primary=#553F83, secondary=#111111, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#553F83, text=#ffffff
 - Spacing scale: 4/8/12/16/24/32
 
 

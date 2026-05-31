@@ -28,11 +28,13 @@ export function RecentEvents() {
               {(event) => (
                 <li>
                   <A
-                    href={`/join?event=${encodeURIComponent(event.event_name)}`}
+                    href={`/join?event=${encodeURIComponent(event.eventCode)}`}
                     class="recent-events__item"
                   >
-                    <span class="event-code">{event.event_name}</span>
-                    <span class="recent-events__date">{formatWhen(event.created_at)}</span>
+                    <span>
+                      {event.eventName} <span class="event-code">{event.eventCode}</span>
+                    </span>
+                    <span class="recent-events__date">{formatWhen(event.createdAt)}</span>
                   </A>
                 </li>
               )}

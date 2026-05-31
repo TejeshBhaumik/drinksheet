@@ -14,15 +14,15 @@ export function CreateEvent() {
   }
 
   return (
-    <>
+    <div class="page-stack">
       <a href="/" class="back-link">
-        ← Back
+        Back
       </a>
       <div class="card">
         <h2 class="page-title">Create Event</h2>
-        <p class="page-sub">Pick a code and your player name to start.</p>
+        <p class="page-sub">Name the match. Drinksheet generates a shareable event code.</p>
         <EventForm mode="create" onSubmit={handleSubmit} />
       </div>
-    </>
+    </div>
   );
 }

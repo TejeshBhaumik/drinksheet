@@ -1,8 +1,7 @@
-import { Show, onCleanup, onMount } from "solid-js";
+import { Show, createEffect, onCleanup, onMount } from "solid-js";
 import { useNavigate, useParams } from "@solidjs/router";
 import { LeaderboardTable } from "../components/LeaderboardTable";
 import { ShareEventButton } from "../components/ShareEventButton";
-import { hasSessionForEvent } from "../lib/identity";
 import { appStore } from "../lib/store";
 import { normalizeEventCode } from "../lib/types";
 
@@ -12,38 +11,71 @@ export function EventPage() {
   const { state } = appStore;
 
   onMount(() => {
-    const eventName = normalizeEventCode(decodeURIComponent(params.eventName));
-
-    if (!hasSessionForEvent(eventName)) {
-      navigate(`/join?event=${encodeURIComponent(eventName)}`, { replace: true });
+    void appStore.loadAuth();
+    const eventCode = params.eventName ? normalizeEventCode(decodeURIComponent(params.eventName)) : "";
+    if (!eventCode) {
+      navigate("/", { replace: true });
       return;
     }
+    void appStore.loadEvent(eventCode);
+  });
 
-    void appStore.loadEvent(eventName);
-    appStore.setupRealtime(eventName);
+  createEffect(() => {
+    if (state.event?.id) appStore.setupRealtime(state.event.id);
   });
 
   onCleanup(() => appStore.teardownRealtime());
 
+  const isParticipant = () =>
+    !!state.currentUser && state.participants.some((p) => p.userId === state.currentUser?.id);
+  const canComplete = () =>
+    !!state.event &&
+    !!state.currentUser &&
+    state.currentUser.id === state.event.createdBy &&
+    !state.event.completedAt;
+  const needsJoin = () => !!state.currentUser && !!state.event && !isParticipant();
+  const eventLabel = () => state.event?.eventName ?? "Event";
+  const eventCode = () => state.event?.eventCode ?? params.eventName ?? "";
+
   return (
-    <>
+    <div class="page-stack">
       <div class="event-header">
         <div>
           <h2 class="page-title">
-            Event <span class="event-code">{state.eventName || params.eventName}</span>
+            {eventLabel()} <span class="event-code">{eventCode()}</span>
           </h2>
-          <p class="page-sub">Live leaderboard — edit your row inline.</p>
+          <p class="page-sub">Live leaderboard with score-weighted metrics.</p>
         </div>
-        <ShareEventButton />
+        <div class="event-actions">
+          <ShareEventButton />
+          <Show when={canComplete()}>
+            <button type="button" class="btn btn--primary share-btn" onClick={() => void appStore.completeEvent()}>
+              Complete
+            </button>
+          </Show>
+        </div>
       </div>
 
       <Show when={state.error}>
         <div class="error">{state.error}</div>
       </Show>
 
-      <Show when={state.loading && state.rows.length === 0} fallback={<LeaderboardTable />}>
+      <Show when={needsJoin()}>
+        <div class="join-callout">
+          <p>You are viewing this event. Join it to enter metrics.</p>
+          <button
+            type="button"
+            class="btn btn--primary"
+            onClick={() => navigate(`/join?event=${encodeURIComponent(state.event!.eventCode)}`)}
+          >
+            Join event
+          </button>
+        </div>
+      </Show>
+
+      <Show when={state.loading && state.participants.length === 0} fallback={<LeaderboardTable />}>
         <p class="loading">Loading...</p>
       </Show>
-    </>
+    </div>
   );
 }

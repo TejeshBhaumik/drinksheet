@@ -18,13 +18,27 @@ export function EventForm(props: Props) {
         props.onSubmit();
       }}
     >
-      <Show when={!isInvite()}>
+      <Show when={props.mode === "create"}>
         <div class="field">
-          <label for="eventCode">Event Code</label>
+          <label for="eventName">Event name</label>
+          <input
+            id="eventName"
+            type="text"
+            placeholder="Memorial Day Match"
+            autocomplete="off"
+            value={state.form.eventName}
+            onInput={(e) => appStore.setFormField("eventName", e.currentTarget.value)}
+          />
+        </div>
+      </Show>
+
+      <Show when={props.mode === "join"}>
+        <div class="field">
+          <label for="eventCode">Event code</label>
           <input
             id="eventCode"
             type="text"
-            placeholder="VEGAS2026"
+            placeholder="ABCD23"
             autocomplete="off"
             value={state.form.eventCode}
             onInput={(e) => appStore.setFormField("eventCode", e.currentTarget.value)}
@@ -33,14 +47,14 @@ export function EventForm(props: Props) {
       </Show>
 
       <div class="field">
-        <label for="playerName">{isInvite() ? "Your name" : "Player Name"}</label>
+        <label for="displayName">{isInvite() ? "Your event name" : "Display name"}</label>
         <input
-          id="playerName"
+          id="displayName"
           type="text"
           placeholder="Your name"
           autocomplete="name"
-          value={state.form.playerName}
-          onInput={(e) => appStore.setFormField("playerName", e.currentTarget.value)}
+          value={state.form.displayName}
+          onInput={(e) => appStore.setFormField("displayName", e.currentTarget.value)}
         />
       </div>
 
