@@ -5,7 +5,6 @@ import { appStore } from "../lib/store";
 
 export function Header() {
   const { state } = appStore;
-  const location = useLocation();
 
   onMount(() => {
     void appStore.loadAuth();
