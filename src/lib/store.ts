@@ -102,7 +102,9 @@ async function loadAuth() {
 async function loginWithEmail() {
   const email = window.prompt("Enter your email to receive a sign-in link");
   if (!email) return;
-  await signInWithEmail(email.trim());
+  const trimmed = email.trim();
+  await signInWithEmail(trimmed);
+  window.alert(`Sent magic link to ${trimmed}.`);
 }
 
 async function logout() {

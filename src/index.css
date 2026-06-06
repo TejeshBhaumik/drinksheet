@@ -527,6 +527,7 @@ td {
   padding: var(--space-3) var(--space-4);
   text-align: left;
   border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
 
 th {
@@ -556,32 +557,11 @@ tr.row--self {
 }
 
 .metric-panel {
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: var(--shadow-md);
-}
-
-.metric-panel h3 {
-  font-size: 1.2rem;
-}
-
-.metric-panel p {
-  margin: var(--space-1) 0 0;
-  color: var(--muted);
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  display: none;
 }
 
 .metric-stepper {
-  min-height: 132px;
+  min-width: 150px;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
@@ -590,12 +570,22 @@ tr.row--self {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.metric-stepper--inline {
+  min-width: 128px;
+  padding: var(--space-2);
+}
+
 .metric-stepper__top,
 .metric-stepper__controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+}
+
+.metric-stepper__label {
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 .metric-stepper__top strong {
@@ -615,6 +605,10 @@ tr.row--self {
   font-size: 1.35rem;
   font-weight: 800;
   cursor: pointer;
+}
+
+.metric-cell {
+  min-width: 150px;
 }
 
 .cell-btn:hover:not(:disabled) {

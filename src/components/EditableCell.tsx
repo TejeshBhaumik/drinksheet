@@ -35,9 +35,9 @@ export function EditableCell(props: Props) {
   }
 
   return (
-    <article class="metric-stepper">
+    <div class="metric-stepper metric-stepper--inline">
       <div class="metric-stepper__top">
-        <span>{props.label}</span>
+        <span class="metric-stepper__label">{props.label}</span>
         <strong>{props.value.toFixed(1)}</strong>
       </div>
       <div class="metric-stepper__controls">
@@ -64,6 +64,6 @@ export function EditableCell(props: Props) {
           +
         </button>
       </div>
-    </article>
+    </div>
   );
 }
