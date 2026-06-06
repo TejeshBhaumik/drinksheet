@@ -3,7 +3,17 @@ import { supabase } from "./client";
 
 function getRedirectUrl(): string {
   const configured = import.meta.env.VITE_SUPABASE_REDIRECT_URL;
-  if (configured) return configured;
+  if (configured) {
+    try {
+      const url = new URL(configured);
+      const isLocalHost = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+      if (!isLocalHost || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        return configured.replace(/\/$/, "");
+      }
+    } catch {
+      // Ignore invalid config and fall through to the current origin.
+    }
+  }
   return window.location.origin;
 }
 
