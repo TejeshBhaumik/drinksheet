@@ -45,9 +45,21 @@ export function Header() {
 }
 
 export function Layout(props: ParentProps) {
+  const { state } = appStore;
+
   return (
     <div class="app">
       <Header />
+      <Show when={state.notice}>
+        <div class="container notice-wrap">
+          <div class="notice">
+            <span>{state.notice}</span>
+            <button type="button" class="btn btn--ghost btn--sm" onClick={() => appStore.clearNotice()}>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      </Show>
       <main class="container">{props.children}</main>
     </div>
   );

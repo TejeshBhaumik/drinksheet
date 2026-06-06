@@ -131,6 +131,23 @@ input {
   font-size: 0.875rem;
 }
 
+.notice-wrap {
+  padding-top: var(--space-3);
+  padding-bottom: 0;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgba(138, 180, 248, 0.22);
+  border-radius: var(--radius-sm);
+  background: rgba(138, 180, 248, 0.1);
+  color: var(--text);
+}
+
 .logo {
   font-family: var(--font-display);
   font-weight: 800;

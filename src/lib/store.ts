@@ -17,6 +17,7 @@ type AppStore = {
   participants: Participant[];
   loading: boolean;
   error: string;
+  notice: string;
   recentEvents: RecentEvent[];
   recentEventsLoading: boolean;
   form: {
@@ -33,6 +34,7 @@ const [state, setState] = createStore<AppStore>({
   participants: [],
   loading: false,
   error: "",
+  notice: "",
   recentEvents: [],
   recentEventsLoading: false,
   form: {
@@ -52,6 +54,14 @@ function setError(message: string) {
 
 function clearError() {
   setState("error", "");
+}
+
+function setNotice(message: string) {
+  setState("notice", message);
+}
+
+function clearNotice() {
+  setState("notice", "");
 }
 
 function setLoading(loading: boolean) {
@@ -104,7 +114,7 @@ async function loginWithEmail() {
   if (!email) return;
   const trimmed = email.trim();
   await signInWithEmail(trimmed);
-  window.alert(`Sent magic link to ${trimmed}.`);
+  setNotice(`Sent magic link to ${trimmed}.`);
 }
 
 async function logout() {
@@ -326,4 +336,5 @@ export const appStore = {
   completeEvent,
   resetForm,
   clearError,
+  clearNotice,
 };
