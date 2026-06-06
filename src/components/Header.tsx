@@ -5,6 +5,7 @@ import { appStore } from "../lib/store";
 
 export function Header() {
   const { state } = appStore;
+  const location = useLocation();
 
   onMount(() => {
     void appStore.loadAuth();
@@ -20,7 +21,11 @@ export function Header() {
           <Show
             when={state.currentUser}
             fallback={
-              <button type="button" class="btn btn--ghost btn--sm" onClick={() => void appStore.loginWithGoogle()}>
+              <button
+                type="button"
+                class="btn btn--ghost btn--sm"
+                onClick={() => void appStore.loginWithGoogle()}
+              >
                 Sign in with Google
               </button>
             }

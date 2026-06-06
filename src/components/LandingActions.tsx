@@ -1,5 +1,4 @@
 import { A } from "@solidjs/router";
-import { Show } from "solid-js";
 import { appStore } from "../lib/store";
 
 export function LandingActions() {
@@ -7,14 +6,7 @@ export function LandingActions() {
 
   return (
     <div class="actions actions--row landing-actions">
-      <Show
-        when={state.currentUser}
-        fallback={
-          <button type="button" class="btn btn--primary" onClick={() => void appStore.loginWithGoogle()}>
-            Sign in with Google
-          </button>
-        }
-      >
+      {state.currentUser ? (
         <>
           <A href="/create" class="btn btn--primary">
             Create Event
@@ -23,7 +15,11 @@ export function LandingActions() {
             Join Event
           </A>
         </>
-      </Show>
+      ) : (
+        <p class="page-sub landing-actions__note">
+          Sign in with Google using the header button to create or join an event.
+        </p>
+      )}
     </div>
   );
 }
