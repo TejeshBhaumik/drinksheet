@@ -1,5 +1,6 @@
 import { Show, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
+import { AuthGate } from "../components/AuthGate";
 import { EventForm } from "../components/EventForm";
 import { parseInviteParams } from "../lib/share";
 import { appStore } from "../lib/store";
@@ -26,26 +27,28 @@ export function JoinEvent() {
       <a href="/" class="back-link">
         Back
       </a>
-      <div class="card">
-        <Show
-          when={isInvite()}
-          fallback={
-            <>
-              <h2 class="page-title">Join Event</h2>
-              <p class="page-sub">
-                Enter the event code and your name. Returning? Use the same name to open your board.
-              </p>
-            </>
-          }
-        >
-          <p class="invite-banner">
-            <strong>{invite().invitedBy}</strong> invited you to{" "}
-            <span class="event-code">{invite().eventName}</span>
-          </p>
-          <p class="page-sub">Enter your name to join.</p>
-        </Show>
-        <EventForm mode={isInvite() ? "invite" : "join"} onSubmit={handleSubmit} />
-      </div>
+      <AuthGate title="Join Event" description="Sign in with Google to join a room and sync your score history.">
+        <div class="card">
+          <Show
+            when={isInvite()}
+            fallback={
+              <>
+                <h2 class="page-title">Join Event</h2>
+                <p class="page-sub">
+                  Enter the event code and your name. Returning? Use the same name to open your board.
+                </p>
+              </>
+            }
+          >
+            <p class="invite-banner">
+              <strong>{invite().invitedBy}</strong> invited you to{" "}
+              <span class="event-code">{invite().eventName}</span>
+            </p>
+            <p class="page-sub">Enter your name to join.</p>
+          </Show>
+          <EventForm mode={isInvite() ? "invite" : "join"} onSubmit={handleSubmit} />
+        </div>
+      </AuthGate>
     </div>
   );
 }
