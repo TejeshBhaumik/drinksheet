@@ -20,7 +20,11 @@ export function AuthGate(props: Props) {
             <h2 class="page-title">{props.title}</h2>
             <p class="page-sub">{props.description}</p>
           </div>
-          <p class="page-sub auth-gate__hint">Use the Sign in button in the header.</p>
+          <div class="auth-gate__actions">
+            <button type="button" class="btn btn--primary" onClick={() => void appStore.loginWithEmail()}>
+              Sign in
+            </button>
+          </div>
         </div>
       }
     >
