@@ -17,7 +17,7 @@ export function LandingActions() {
         </>
       ) : (
         <p class="page-sub landing-actions__note">
-          Sign in with Google using the header button to create or join an event.
+          Sign in using the header button to create or join an event.
         </p>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { getCurrentUser, signInWithGoogle, signOut } from "./api/auth";
+import { getCurrentUser, signInWithEmail, signOut } from "./api/auth";
 import { completeEvent as completeEventApi, createEvent as createEventApi, getEvent, getRecentEvents, joinEvent as joinEventApi } from "./api/events";
 import { getParticipants, updateParticipantMetrics } from "./api/participants";
 import { useLeaderboardStream } from "./api/realtime";
@@ -99,8 +99,10 @@ async function loadAuth() {
   }
 }
 
-async function loginWithGoogle() {
-  await signInWithGoogle();
+async function loginWithEmail() {
+  const email = window.prompt("Enter your email to receive a sign-in link");
+  if (!email) return;
+  await signInWithEmail(email.trim());
 }
 
 async function logout() {
@@ -127,7 +129,7 @@ async function loadRecentEvents() {
 
 function requireUser(): AppUser | null {
   if (state.currentUser) return state.currentUser;
-  setError("Sign in with Google to continue.");
+  setError("Sign in with email to continue.");
   return null;
 }
 
@@ -310,7 +312,7 @@ export const appStore = {
   setFormField,
   prefillEventCode,
   loadAuth,
-  loginWithGoogle,
+  loginWithEmail,
   logout,
   loadRecentEvents,
   createEvent,

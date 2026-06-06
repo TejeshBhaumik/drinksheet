@@ -29,10 +29,10 @@ export async function getCurrentUser(): Promise<User | null> {
   return data.user;
 }
 
-export async function signInWithGoogle(): Promise<void> {
+export async function signInWithEmail(email: string): Promise<void> {
   const next = `${window.location.pathname}${window.location.search}`;
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
     options: {
       redirectTo: `${getRedirectUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
     },

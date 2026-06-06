@@ -29,9 +29,12 @@ npm run dev
    |---|---|
    | `VITE_SUPABASE_URL` | `https://rhncvsohhzywoqtopsaq.supabase.co` |
    | `VITE_SUPABASE_PUBLISHABLE_KEY` | your `sb_publishable_...` key |
-   | `VITE_SUPABASE_REDIRECT_URL` | your deployed site URL, for example `https://your-app.vercel.app` |
 
 3. **Redeploy** after adding env vars (Deployments → ⋯ → Redeploy).
-4. In **Supabase → Authentication → URL Configuration**, add the same deployed URL to the allowed redirect URLs.
+4. In **Supabase → Authentication → URL Configuration**, set:
+   - Site URL: `https://drinksheet.vercel.app`
+   - Additional redirect URL: `https://drinksheet.vercel.app/auth/callback`
+
+5. Enable **email auth** in Supabase Authentication.
 
 `vercel.json` handles SPA routing so `/event/VEGAS2026` works on refresh.

@@ -23,9 +23,9 @@ export function Header() {
               <button
                 type="button"
                 class="btn btn--ghost btn--sm"
-                onClick={() => void appStore.loginWithGoogle()}
+                onClick={() => void appStore.loginWithEmail()}
               >
-                Sign in with Google
+                Sign in
               </button>
             }
           >

@@ -28,7 +28,7 @@ export function AuthCallback() {
           fallback={
             <>
               <div class="eyebrow">Sign-in failed</div>
-              <h2 class="page-title">Could not complete Google sign-in</h2>
+              <h2 class="page-title">Could not complete sign-in</h2>
               <p class="page-sub">{error()}</p>
               <a href="/" class="btn btn--primary">
                 Back to home
@@ -37,7 +37,7 @@ export function AuthCallback() {
           }
         >
           <div class="eyebrow">Signing in</div>
-          <h2 class="page-title">Completing Google sign-in</h2>
+          <h2 class="page-title">Completing sign-in</h2>
           <p class="page-sub">Please wait while Drinksheet finishes authentication.</p>
         </Show>
       </div>

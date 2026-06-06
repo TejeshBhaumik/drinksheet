@@ -20,7 +20,7 @@ export function AuthGate(props: Props) {
             <h2 class="page-title">{props.title}</h2>
             <p class="page-sub">{props.description}</p>
           </div>
-          <p class="page-sub auth-gate__hint">Use the Sign in with Google button in the header.</p>
+          <p class="page-sub auth-gate__hint">Use the Sign in button in the header.</p>
         </div>
       }
     >
