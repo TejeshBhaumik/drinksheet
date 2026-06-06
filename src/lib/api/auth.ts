@@ -25,4 +25,5 @@ export async function signInWithEmail(email: string): Promise<void> {
 
 export async function signOut(): Promise<void> {
   const { error } = await supabase.auth.signOut();
-  if (error) throw error
+  if (error) throw error;
+}
