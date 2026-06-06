@@ -34,7 +34,7 @@ export async function signInWithEmail(email: string): Promise<void> {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      redirectTo: `${getRedirectUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+      emailRedirectTo: `${getRedirectUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
   if (error) throw error;
