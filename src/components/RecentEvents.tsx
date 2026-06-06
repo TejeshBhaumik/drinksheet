@@ -13,8 +13,14 @@ export function RecentEvents() {
   const { state } = appStore;
 
   return (
-    <section class="recent-events">
-      <h2 class="recent-events__title">Recent events</h2>
+    <section class="recent-events card">
+      <div class="recent-events__header">
+        <div>
+          <p class="eyebrow">Activity</p>
+          <h2 class="recent-events__title">Recent events</h2>
+        </div>
+        <p class="recent-events__lede">Jump back into a room or create a new one in a few seconds.</p>
+      </div>
       <Show
         when={!state.recentEventsLoading}
         fallback={<p class="recent-events__empty">Loading events...</p>}
@@ -31,10 +37,14 @@ export function RecentEvents() {
                     href={`/join?event=${encodeURIComponent(event.eventCode)}`}
                     class="recent-events__item"
                   >
-                    <span>
-                      {event.eventName} <span class="event-code">{event.eventCode}</span>
+                    <span class="recent-events__item-main">
+                      <strong>{event.eventName}</strong>
+                      <span class="event-code">{event.eventCode}</span>
                     </span>
-                    <span class="recent-events__date">{formatWhen(event.createdAt)}</span>
+                    <span class="recent-events__item-meta">
+                      <span class="recent-events__arrow">Open</span>
+                      <span class="recent-events__date">{formatWhen(event.createdAt)}</span>
+                    </span>
                   </A>
                 </li>
               )}

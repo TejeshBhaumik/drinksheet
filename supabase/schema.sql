@@ -19,7 +19,7 @@ create table if not exists events (
   created_by uuid not null references users(id) on delete cascade,
   completed_at timestamptz,
   created_at timestamptz not null default now()
-);
+);  
 
 create table if not exists participants (
   id uuid primary key default gen_random_uuid(),

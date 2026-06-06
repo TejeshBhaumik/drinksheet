@@ -21,7 +21,7 @@ export function Header() {
             when={state.currentUser}
             fallback={
               <button type="button" class="btn btn--ghost btn--sm" onClick={() => void appStore.loginWithGoogle()}>
-                Sign in
+                Sign in with Google
               </button>
             }
           >

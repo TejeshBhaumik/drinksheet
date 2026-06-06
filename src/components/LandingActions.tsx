@@ -2,7 +2,7 @@ import { A } from "@solidjs/router";
 
 export function LandingActions() {
   return (
-    <div class="actions actions--row">
+    <div class="actions actions--row landing-actions">
       <A href="/create" class="btn btn--primary">
         Create Event
       </A>
