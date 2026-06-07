@@ -34,6 +34,6 @@ npm run dev
 4. In **Supabase → Authentication → URL Configuration**, set:
    - Site URL: `https://drinksheet.vercel.app`
 
-5. Enable **email auth** in Supabase Authentication.
+5. Enable **phone auth** in Supabase Authentication and configure an SMS provider.
 
 `vercel.json` handles SPA routing so `/event/VEGAS2026` works on refresh.

@@ -13,12 +13,18 @@ export async function getCurrentUser(): Promise<User | null> {
   return data.user;
 }
 
-export async function signInWithEmail(email: string): Promise<void> {
+export async function signInWithPhone(phone: string): Promise<void> {
   const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.origin,
-    },
+    phone,
+  });
+  if (error) throw error;
+}
+
+export async function verifyPhoneOtp(phone: string, token: string): Promise<void> {
+  const { error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms",
   });
   if (error) throw error;
 }

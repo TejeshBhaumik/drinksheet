@@ -27,7 +27,7 @@ export function JoinEvent() {
       <a href="/" class="back-link">
         Back
       </a>
-      <AuthGate title="Join Event" description="Sign in with email to join a room and sync your score history.">
+      <AuthGate title="Join Event" description="Sign in with phone to join a room and sync your score history.">
         <div class="card">
           <Show
             when={isInvite()}

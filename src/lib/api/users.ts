@@ -11,6 +11,7 @@ export async function getUser(userId: string): Promise<AppUser> {
 export async function upsertUser(input: {
   userId: string;
   email: string | null;
+  phoneNumber?: string | null;
   displayName: string;
 }): Promise<AppUser> {
   const { data, error } = await supabase
@@ -18,6 +19,7 @@ export async function upsertUser(input: {
     .upsert({
       id: input.userId,
       email: input.email,
+      phone_number: input.phoneNumber ?? null,
       display_name: input.displayName,
     })
     .select()
