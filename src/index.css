@@ -148,6 +148,12 @@ input {
   color: var(--text);
 }
 
+.auth-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .logo {
   font-family: var(--font-display);
   font-weight: 800;
