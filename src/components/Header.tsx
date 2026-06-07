@@ -20,22 +20,13 @@ export function Header() {
           <Show
             when={state.currentUser}
             fallback={
-              <>
-                <button
-                  type="button"
-                  class="btn btn--ghost btn--sm"
-                  onClick={() => void appStore.loginWithEmail()}
-                >
-                  Email
-                </button>
-                <button
-                  type="button"
-                  class="btn btn--primary btn--sm"
-                  onClick={() => void appStore.loginWithGoogle()}
-                >
-                  Google
-                </button>
-              </>
+              <button
+                type="button"
+                class="btn btn--primary btn--sm"
+                onClick={() => void appStore.loginWithEmail()}
+              >
+                Sign in
+              </button>
             }
           >
             {(user) => (

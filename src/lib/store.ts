@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { getCurrentUser, signInWithEmail, signInWithGoogle, signOut } from "./api/auth";
+import { getCurrentUser, signInWithEmail, signOut } from "./api/auth";
 import { completeEvent as completeEventApi, createEvent as createEventApi, getEvent, getRecentEvents, joinEvent as joinEventApi } from "./api/events";
 import { getParticipants, updateParticipantMetrics } from "./api/participants";
 import { useLeaderboardStream } from "./api/realtime";
@@ -115,10 +115,6 @@ async function loginWithEmail() {
   const trimmed = email.trim();
   await signInWithEmail(trimmed);
   setNotice(`Sent magic link to ${trimmed}.`);
-}
-
-async function loginWithGoogle() {
-  await signInWithGoogle();
 }
 
 async function logout() {
@@ -329,7 +325,6 @@ export const appStore = {
   prefillEventCode,
   loadAuth,
   loginWithEmail,
-  loginWithGoogle,
   logout,
   loadRecentEvents,
   createEvent,
