@@ -21,7 +21,7 @@ export function AuthGate(props: Props) {
             <p class="page-sub">{props.description}</p>
           </div>
           <div class="auth-gate__actions">
-            <button type="button" class="btn btn--primary" onClick={() => void appStore.loginWithPhone()}>
+            <button type="button" class="btn btn--primary" onClick={() => void appStore.loginWithEmail()}>
               Sign in
             </button>
           </div>

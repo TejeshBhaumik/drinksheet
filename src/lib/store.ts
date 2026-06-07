@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { getCurrentUser, signInWithPhone, signOut, verifyPhoneOtp } from "./api/auth";
+import { getCurrentUser, signInWithPassword, signOut, signUpWithPassword } from "./api/auth";
 import { completeEvent as completeEventApi, createEvent as createEventApi, getEvent, getRecentEvents, joinEvent as joinEventApi } from "./api/events";
 import { getParticipants, updateParticipantMetrics } from "./api/participants";
 import { useLeaderboardStream } from "./api/realtime";
@@ -80,7 +80,6 @@ function defaultDisplayName(user: Awaited<ReturnType<typeof getCurrentUser>>): s
   return (
     user?.user_metadata?.full_name ??
     user?.user_metadata?.name ??
-    user?.phone ??
     user?.email?.split("@")[0] ??
     "Player"
   );
@@ -98,7 +97,6 @@ async function loadAuth() {
     const appUser = await upsertUser({
       userId: user.id,
       email: user.email ?? null,
-      phoneNumber: user.phone ?? null,
       displayName: defaultDisplayName(user),
     });
 
@@ -111,21 +109,26 @@ async function loadAuth() {
   }
 }
 
-async function loginWithPhone() {
-  const phone = window.prompt("Enter your phone number with country code, e.g. +15551234567");
-  if (!phone) return;
-  const trimmed = phone.trim();
+async function loginWithEmail() {
+  const email = window.prompt("Enter your email address");
+  if (!email) return;
+  const password = window.prompt("Enter your password");
+  if (!password) return;
+  const trimmedEmail = email.trim();
   try {
-    await signInWithPhone(trimmed);
-    setNotice(`Sent sign-in code to ${trimmed}.`);
-    const token = window.prompt("Enter the verification code");
-    if (!token) return;
-    await verifyPhoneOtp(trimmed, token.trim());
+    await signInWithPassword(trimmedEmail, password);
+    setNotice(`Signed in as ${trimmedEmail}.`);
     await loadAuth();
-    setNotice("Phone sign-in complete.");
   } catch (e) {
-    setNotice(e instanceof Error ? e.message : "Could not complete phone sign-in.");
-    throw e;
+    try {
+      await signUpWithPassword(trimmedEmail, password);
+      await signInWithPassword(trimmedEmail, password);
+      setNotice(`Signed in as ${trimmedEmail}.`);
+      await loadAuth();
+    } catch (signupError) {
+      setNotice(signupError instanceof Error ? signupError.message : "Could not sign in.");
+      throw signupError;
+    }
   }
 }
 
@@ -153,7 +156,7 @@ async function loadRecentEvents() {
 
 function requireUser(): AppUser | null {
   if (state.currentUser) return state.currentUser;
-  setError("Sign in with phone to continue.");
+  setError("Sign in with email to continue.");
   return null;
 }
 
@@ -336,7 +339,7 @@ export const appStore = {
   setFormField,
   prefillEventCode,
   loadAuth,
-  loginWithPhone,
+  loginWithEmail,
   logout,
   loadRecentEvents,
   createEvent,

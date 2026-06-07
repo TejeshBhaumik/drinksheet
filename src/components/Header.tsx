@@ -23,7 +23,7 @@ export function Header() {
               <button
                 type="button"
                 class="btn btn--primary btn--sm"
-                onClick={() => void appStore.loginWithPhone()}
+                onClick={() => void appStore.loginWithEmail()}
               >
                 Sign in
               </button>
@@ -54,7 +54,7 @@ export function Layout(props: ParentProps) {
         <div class="notice-backdrop" role="presentation">
           <div class="notice" role="status" aria-live="polite">
             <div>
-              <div class="eyebrow">Sign-in code</div>
+              <div class="eyebrow">Sign-in status</div>
               <p>{state.notice}</p>
             </div>
             <button type="button" class="btn btn--primary" onClick={() => appStore.clearNotice()}>

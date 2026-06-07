@@ -13,18 +13,18 @@ export async function getCurrentUser(): Promise<User | null> {
   return data.user;
 }
 
-export async function signInWithPhone(phone: string): Promise<void> {
-  const { error } = await supabase.auth.signInWithOtp({
-    phone,
+export async function signInWithPassword(email: string, password: string): Promise<void> {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
   if (error) throw error;
 }
 
-export async function verifyPhoneOtp(phone: string, token: string): Promise<void> {
-  const { error } = await supabase.auth.verifyOtp({
-    phone,
-    token,
-    type: "sms",
+export async function signUpWithPassword(email: string, password: string): Promise<void> {
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
   });
   if (error) throw error;
 }
