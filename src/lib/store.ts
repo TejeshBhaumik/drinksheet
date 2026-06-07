@@ -312,4 +312,34 @@ async function completeEvent(): Promise<void> {
   }
 }
 
-func
+function resetForm() {
+  setState({
+    form: {
+      eventName: "",
+      eventCode: "",
+      displayName: state.currentUser?.displayName ?? "",
+    },
+    error: "",
+  });
+}
+
+export const appStore = {
+  state,
+  leaderboard,
+  setFormField,
+  prefillEventCode,
+  loadAuth,
+  loginWithEmail,
+  logout,
+  loadRecentEvents,
+  createEvent,
+  joinEvent,
+  loadEvent,
+  setupRealtime,
+  teardownRealtime,
+  updateMetric,
+  completeEvent,
+  resetForm,
+  clearError,
+  clearNotice,
+};
