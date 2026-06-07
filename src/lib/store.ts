@@ -113,8 +113,13 @@ async function loginWithEmail() {
   const email = window.prompt("Enter your email to receive a sign-in link");
   if (!email) return;
   const trimmed = email.trim();
-  await signInWithEmail(trimmed);
-  setNotice(`Sent magic link to ${trimmed}.`);
+  try {
+    await signInWithEmail(trimmed);
+    setNotice(`Sent magic link to ${trimmed}.`);
+  } catch (e) {
+    setNotice(e instanceof Error ? e.message : "Could not send magic link.");
+    throw e;
+  }
 }
 
 async function logout() {
@@ -307,34 +312,4 @@ async function completeEvent(): Promise<void> {
   }
 }
 
-function resetForm() {
-  setState({
-    form: {
-      eventName: "",
-      eventCode: "",
-      displayName: state.currentUser?.displayName ?? "",
-    },
-    error: "",
-  });
-}
-
-export const appStore = {
-  state,
-  leaderboard,
-  setFormField,
-  prefillEventCode,
-  loadAuth,
-  loginWithEmail,
-  logout,
-  loadRecentEvents,
-  createEvent,
-  joinEvent,
-  loadEvent,
-  setupRealtime,
-  teardownRealtime,
-  updateMetric,
-  completeEvent,
-  resetForm,
-  clearError,
-  clearNotice,
-};
+func

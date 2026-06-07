@@ -131,20 +131,30 @@ input {
   font-size: 0.875rem;
 }
 
-.notice-wrap {
-  padding-top: var(--space-3);
-  padding-bottom: 0;
+.notice-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: rgba(0, 0, 0, 0.48);
 }
 
 .notice {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  width: min(420px, 100%);
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
   border: 1px solid rgba(138, 180, 248, 0.22);
-  border-radius: var(--radius-sm);
-  background: rgba(138, 180, 248, 0.1);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-lg);
+  color: var(--text);
+}
+
+.notice p {
+  margin: 0;
   color: var(--text);
 }
 

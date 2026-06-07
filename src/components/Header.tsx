@@ -51,11 +51,14 @@ export function Layout(props: ParentProps) {
     <div class="app">
       <Header />
       <Show when={state.notice}>
-        <div class="container notice-wrap">
-          <div class="notice">
-            <span>{state.notice}</span>
-            <button type="button" class="btn btn--ghost btn--sm" onClick={() => appStore.clearNotice()}>
-              Dismiss
+        <div class="notice-backdrop" role="presentation">
+          <div class="notice" role="status" aria-live="polite">
+            <div>
+              <div class="eyebrow">Email sent</div>
+              <p>{state.notice}</p>
+            </div>
+            <button type="button" class="btn btn--primary" onClick={() => appStore.clearNotice()}>
+              OK
             </button>
           </div>
         </div>
