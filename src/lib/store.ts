@@ -123,7 +123,7 @@ async function loginWithEmail() {
     try {
       await signUpWithPassword(trimmedEmail, password);
       await signInWithPassword(trimmedEmail, password);
-      setNotice(`Signed in as ${trimmedEmail}.`);
+      setNotice(`Signed up and signed in as ${trimmedEmail}.`);
       await loadAuth();
     } catch (signupError) {
       setNotice(signupError instanceof Error ? signupError.message : "Could not sign in.");

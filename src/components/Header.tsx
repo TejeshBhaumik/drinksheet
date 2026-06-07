@@ -25,7 +25,7 @@ export function Header() {
                 class="btn btn--primary btn--sm"
                 onClick={() => void appStore.loginWithEmail()}
               >
-                Sign in
+                Sign in or sign up
               </button>
             }
           >
