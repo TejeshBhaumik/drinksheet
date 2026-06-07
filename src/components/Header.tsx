@@ -20,13 +20,22 @@ export function Header() {
           <Show
             when={state.currentUser}
             fallback={
-              <button
-                type="button"
-                class="btn btn--primary btn--sm"
-                onClick={() => void appStore.loginWithEmail()}
-              >
-                Sign in or sign up
-              </button>
+              <>
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--sm"
+                  onClick={() => void appStore.signUpWithEmail()}
+                >
+                  Sign up
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--primary btn--sm"
+                  onClick={() => void appStore.loginWithEmail()}
+                >
+                  Sign in
+                </button>
+              </>
             }
           >
             {(user) => (
@@ -54,7 +63,7 @@ export function Layout(props: ParentProps) {
         <div class="notice-backdrop" role="presentation">
           <div class="notice" role="status" aria-live="polite">
             <div>
-              <div class="eyebrow">Sign-in status</div>
+              <div class="eyebrow">Auth status</div>
               <p>{state.notice}</p>
             </div>
             <button type="button" class="btn btn--primary" onClick={() => appStore.clearNotice()}>

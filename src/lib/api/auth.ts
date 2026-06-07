@@ -22,11 +22,14 @@ export async function signInWithPassword(email: string, password: string): Promi
 }
 
 export async function signUpWithPassword(email: string, password: string): Promise<void> {
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
   if (error) throw error;
+  if (!data.session) {
+    throw new Error("Account created. Sign in to continue.");
+  }
 }
 
 export async function signOut(): Promise<void> {

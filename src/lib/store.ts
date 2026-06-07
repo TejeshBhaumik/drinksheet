@@ -120,15 +120,30 @@ async function loginWithEmail() {
     setNotice(`Signed in as ${trimmedEmail}.`);
     await loadAuth();
   } catch (e) {
-    try {
-      await signUpWithPassword(trimmedEmail, password);
-      await signInWithPassword(trimmedEmail, password);
-      setNotice(`Signed up and signed in as ${trimmedEmail}.`);
-      await loadAuth();
-    } catch (signupError) {
-      setNotice(signupError instanceof Error ? signupError.message : "Could not sign in.");
-      throw signupError;
-    }
+    setNotice(
+      e instanceof Error && e.message.includes("User already registered")
+        ? `Account exists for ${trimmedEmail}. Use Sign in again to log in.`
+        : e instanceof Error
+          ? e.message
+          : "Could not sign in."
+    );
+    throw e;
+  }
+}
+
+async function signUpWithEmail() {
+  const email = window.prompt("Enter your email address");
+  if (!email) return;
+  const password = window.prompt("Choose a password");
+  if (!password) return;
+  const trimmedEmail = email.trim();
+  try {
+    await signUpWithPassword(trimmedEmail, password);
+    setNotice(`Account created and signed in as ${trimmedEmail}.`);
+    await loadAuth();
+  } catch (e) {
+    setNotice(e instanceof Error ? e.message : "Could not sign up.");
+    throw e;
   }
 }
 
@@ -340,6 +355,7 @@ export const appStore = {
   prefillEventCode,
   loadAuth,
   loginWithEmail,
+  signUpWithEmail,
   logout,
   loadRecentEvents,
   createEvent,

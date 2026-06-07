@@ -19,7 +19,7 @@ export function CreateEvent() {
       <a href="/" class="back-link">
         Back
       </a>
-      <AuthGate title="Create Event" description="Sign in with email and password to create a new event and generate a shareable code.">
+      <AuthGate title="Create Event" description="Sign in to use an existing account or sign up to create a new one, then create a shareable code.">
         <div class="card">
           <h2 class="page-title">Create Event</h2>
           <p class="page-sub">Name the match. Drinksheet generates a shareable event code.</p>
